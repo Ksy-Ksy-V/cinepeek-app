@@ -4,7 +4,8 @@ const global = {
       term: "",
       type: "",
       page: 1,
-      totalPages: 1
+      totalPages: 1,
+      totalResults: 0
     },
     api: {
       apiKey: "c9953b66ef21cf52774520b2b553fe55",
@@ -234,12 +235,109 @@ async function search() {
   global.search.term = urlParams.get("search-term");
 
   if (global.search.term !== "" && global.search.term !== null) {
-    const results = await searchAPIDate();
-    console.log(results)
+    const {results, total_pages, page, total_results} = await searchAPIDate();
+
+    global.search.page = page;
+    global.search.totalPages = total_pages;
+    global.search.totalResults = total_results;
+
+    
+    if (results.length === 0) {
+      showAlert("No results found");
+      return
+    }
+
+    displaySearchResults(results);
+
+    document.querySelector("#search-term").value = "";
+
   } else  {
     showAlert("Please enter a search term");
   }
+}
 
+function displaySearchResults (results) {
+  //Clear prev res 
+
+  document.querySelector("#search-results").innerHTML = "";
+  document.querySelector("#search-results-heading").innerHTML = "";
+  document.querySelector("#pagination").innerHTML = "";
+
+    console.log(results,'test')
+  results.forEach(result => {
+      const div = document.createElement("div");
+      div.classList.add("card");
+      div.innerHTML = `
+      <a href="${global.search.type}-details.html?id=${result.id}">
+      ${
+        result.poster_path
+          ? `<img
+        src="https://image.tmdb.org/t/p/w500${result.poster_path}"
+        class="card-img-top"
+        alt="${global.search.type === "movie" ? result.title : result.name}"
+      />`
+          : `<img
+      src="../images/no-image.jpg"
+      class="card-img-top"
+      alt="${global.search.type === "movie" ? result.title : result.name}"
+      />`
+      }
+    </a>
+    <div class="card-body">
+      <h5 class="card-title">${global.search.type === "movie" ? result.title : result.name}</h5>
+      <p class="card-text">
+        <small class="text-muted">Release: ${global.search.type === "movie" ? result.release_date : result.first_air_date }</small>
+      </p>
+    </div>
+    `;
+
+    document.querySelector("#search-results-heading").innerHTML = `
+      <h2>${results.length} of ${global.search.totalResults} Results for ${global.search.term}</h2>
+    `;
+
+    document.querySelector("#search-results").appendChild(div);
+  });
+
+  displayPagination();
+
+}
+
+//Pagination for search 
+
+function displayPagination() {
+  const div = document.createElement("div");
+  div.classList.add("pagination");
+  div.innerHTML = `
+  <button class="btn btn-primary" id="prev">Prev</button>
+  <button class="btn btn-primary" id="next">Next</button>
+  <div class="page-counter">Page ${global.search.page} of ${global.search.totalPages}</div> 
+  `;
+
+  document.querySelector("#pagination").appendChild(div);
+
+  if (global.search.page === 1) {
+    document.querySelector("#prev").disabled = true;
+  }
+
+  if (global.search.page === global.search.totalPages) {
+    document.querySelector("#next").disabled = true;
+  }
+
+  //Next page
+  document.querySelector("#next").addEventListener("click", async () => 
+  {
+    global.search.page++;
+    const { results, total_pages } = await searchAPIDate();
+    displaySearchResults(results);
+  });
+
+   // Prev page
+   document.querySelector("#prev").addEventListener("click", async () => 
+   {
+     global.search.page--;
+     const { results, total_pages } = await searchAPIDate();
+     displaySearchResults(results);
+   });
 }
 
 // Display Slider Movies
@@ -314,7 +412,7 @@ function initSwiper () {
     showSpinner();
 
     const response = await fetch(
-      `${API_URL}search/${global.search.type}?api_key=${API_KEY}&language=en-US&query=${global.search.term}`
+      `${API_URL}search/${global.search.type}?api_key=${API_KEY}&language=en-US&query=${global.search.term}&page=${global.search.page}`
       );
 
     const data = await response.json();
@@ -346,13 +444,13 @@ function initSwiper () {
      })
   };
 
-  // Show Alert 
-  function showAlert (message, className) {
-    const alertEl = document.createElement("div");
-    alertEl.classList.add("alert", className);
+  // Show Alert  
+  function showAlert(message, className = 'error') {
+    const alertEl = document.createElement('div');
+    alertEl.classList.add('alert', className);
     alertEl.appendChild(document.createTextNode(message));
-    document.querySelector("#alert").appendChild(alertEl);
-
+    document.querySelector('#alert').appendChild(alertEl);
+  
     setTimeout(() => alertEl.remove(), 3000);
   }
 
