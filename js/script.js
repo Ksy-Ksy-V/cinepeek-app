@@ -458,6 +458,29 @@ function initSwiper () {
     return number.toLocaleString();
   }
 
+  // Top button:
+
+function topBtn() {
+  const topButton = document.getElementById("top-button");
+
+  window.onscroll = function() {scrollFunction()};
+
+  function scrollFunction() {
+    if (document.body.scrollTop > 40 || document.documentElement.scrollTop > 40) {
+        topButton.classList.add("show");
+    } else {
+        topButton.classList.remove("show");
+    }
+  }
+}
+
+function topFunction() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
+
   // Init App 
 
 function init() {
@@ -486,4 +509,5 @@ function init() {
 
 document.addEventListener("DOMContentLoaded", init);
 
+document.addEventListener('DOMContentLoaded', topBtn);
 
