@@ -121,10 +121,18 @@ async function displayMovieDetails() {
       <p>
         ${movie.overview}
       </p>
-      <h5>Genres</h5>
+
       <ul class="list-group">
-      ${movie.genres.map((genre) => `<li>${genre.name}</li>`).join("")}
+      <div>
+      ${
+        movie.genres && movie.genres.length > 0
+          ? `<h5>Genres:</h5>
+             <span>${movie.genres.map(genre => genre.name).join(", ")}</span>`
+          : ''
+      }
+      </div>
       </ul>
+      
       <a href="${movie.homepage}" target="_blank" class="btn">Visit Movie Homepage</a>
     </div>
   </div>
@@ -137,7 +145,7 @@ async function displayMovieDetails() {
       <li><span class="text-secondary">Status:</span> ${movie.status}</li>
       </ul>
     <h4>Production Companies</h4>
-    <div class="list-group">  ${movie.production_companies.map((company) => `<span>${company.name}</span>`).join("")}</div>
+    <div class="list-group">  ${movie.production_companies.map((company) => `<span>${company.name}</span>`).join(", ")}</div>
   </div>`;
 
   document.querySelector("#movie-details").appendChild(div);
@@ -172,31 +180,42 @@ div.innerHTML = `
   }
   </div>
   <div>
-  <h2>${show.name}</h2>
-    <p>
-      <i class="fas fa-star text-primary"></i>
-      ${show.vote_average.toFixed(1)} / 10
-    </p>
-    <p class="text-muted">Air data: ${show.last_air_date}</p>
-    <p>
-      ${show.overview}
-    </p>
-    <h5>Genres</h5>
-    <ul class="list-group">
-    ${show.genres.map((genre) => `<li>${genre.name}</li>`).join("")}
-    </ul>
-    <a href="${show.homepage}" target="_blank" class="btn">Visit Show Homepage</a>
+      <h2>${show.name}</h2>
+        <p>
+          <i class="fas fa-star text-primary"></i>
+          ${show.vote_average.toFixed(1)} / 10
+        </p>
+        <p class="text-muted">Air data: ${show.last_air_date}</p>
+        <p>
+          ${show.overview}
+        </p> 
+      
+        <ul class="list-group">
+        <div>
+        ${
+          show.genres && show.genres.length > 0
+            ? `<div>
+                 <h5>Genres:</h5>
+                 <span>${show.genres.map(genre => genre.name).join(", ")}</span>
+               </div>`
+            : ''
+        }
+        </div>
+        </ul>
+
+        <a href="${show.homepage}" target="_blank" class="btn">Visit Show Homepage</a>
+      </div>
   </div>
-</div>
-<div class="details-bottom">
-  <h2>Show Info</h2>
-  <ul>
+
+  <div class="details-bottom">
+    <h2>Show Info</h2>
+   <ul>
     <li><span class="text-secondary">Number of Episodes:</span> ${show.number_of_episodes} </li>
     <li><span class="text-secondary">Last Episode To Air:</span> ${show.last_episode_to_air.name}</li>
     <li><span class="text-secondary">Status:</span> ${show.status}</li>
     </ul>
   <h4>Production Companies</h4>
-  <div class="list-group">  ${show.production_companies.map((company) => `<span>${company.name}</span>`).join("")}</div>
+  <div class="list-group">  ${show.production_companies.map((company) => `<span>${company.name}</span>`).join(", ")}</div>
 </div>`;
 
 document.querySelector("#show-details").appendChild(div);
