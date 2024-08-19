@@ -90,14 +90,8 @@ ul {
 	background: rgba(0, 0, 0, 0.8);
 }
 
-.main-header .logo-cine {
+.main-header .logo {
 	color: #fff;
-	font-size: 25px;
-	font-weight: 700;
-	text-transform: uppercase;
-}
-.main-header .logo-peek {
-	color: var(--color-secondary);
 	font-size: 25px;
 	font-weight: 700;
 	text-transform: uppercase;
